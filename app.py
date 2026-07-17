@@ -1,13 +1,9 @@
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
+# RMR CALCULATION FUNCTIONS
 
-# =========================================================
-# RMR (ROCK MASS RATING) CALCULATION FUNCTIONS
-# (ported from the uploaded notebook, with small bug fixes)
-# =========================================================
-
-# ---------- PARAMETER 1: Strength of intact rock material ----------
+#  PARAMETER 1: Strength of intact rock material 
 def rating_from_strength(test_type, value):
     test_type = test_type.strip().lower()
 
@@ -44,7 +40,7 @@ def rating_from_strength(test_type, value):
     return rating
 
 
-# ---------- PARAMETER 2: Drill core quality RQD ----------
+# PARAMETER 2: Drill core quality RQD 
 def rating_from_rqd(rqd1):
     if 90 <= rqd1 <= 100:
         rating = 20
@@ -59,7 +55,7 @@ def rating_from_rqd(rqd1):
     return rating
 
 
-# ---------- PARAMETER 3: Spacing of discontinuities ----------
+#  PARAMETER 3: Spacing of discontinuities 
 def rating_from_spacing(spacing1):
     if spacing1 > 2000:
         rating = 20
@@ -74,7 +70,7 @@ def rating_from_spacing(spacing1):
     return rating
 
 
-# ---------- PARAMETER 4: Condition of discontinuities ----------
+#  PARAMETER 4: Condition of discontinuities 
 def rating_from_length(length1):
     if length1 < 1:
         rating = 6
@@ -160,7 +156,7 @@ def rating_from_weathering(weathering):
     return rating
 
 
-# ---------- PARAMETER 5: Groundwater ----------
+#  PARAMETER 5: Groundwater 
 def rating_from_inflow(inflow):
     if inflow == 0:
         rating = 15
@@ -206,7 +202,7 @@ def rating_from_condition(condition):
     return rating
 
 
-# ---------- TABLE B: Rating adjustment for discontinuity orientation ----------
+#  TABLE B: Rating adjustment for discontinuity orientation
 def get_orientation_adjustment(structure_type, orientation):
     structure_type = structure_type.strip().lower()
     orientation = orientation.strip().lower()
@@ -258,11 +254,8 @@ def get_orientation_adjustment(structure_type, orientation):
 
     return rating
 
-
-# =========================================================
 # LOOKUP TABLES: map HTML short-codes -> full text the
 # rating functions above expect
-# =========================================================
 
 ROUGHNESS_MAP = {
     "vr": "very rough",
@@ -312,10 +305,7 @@ def to_float(value, default=0.0):
     except ValueError:
         return default
 
-
-# =========================================================
 # FLASK ROUTE
-# =========================================================
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -336,15 +326,15 @@ def home():
         else:
             r1 = 0
 
-        # ---- Parameter 2: RQD ----
+        #  Parameter 2: RQD
         rqd1 = to_float(request.form.get('rqd'))
         r2 = rating_from_rqd(rqd1)
 
-        # ---- Parameter 3: Spacing ----
+        #  Parameter 3: Spacing 
         spacing1 = to_float(request.form.get('spacing'))
         r3 = rating_from_spacing(spacing1)
 
-        # ---- Parameter 4: Condition of discontinuities ----
+        # Parameter 4: Condition of discontinuities 
         length1 = to_float(request.form.get('length'))
         r4a = rating_from_length(length1)
 
@@ -373,7 +363,7 @@ def home():
 
         r4 = r4a + r4b + r4c + r4d + r4e
 
-        # ---- Parameter 5: Groundwater ----
+        # Parameter 5: Groundwater
         gw_choice = request.form.get('gw_choice', '')
 
         if gw_choice == 'inflow':
@@ -389,10 +379,10 @@ def home():
         else:
             r5 = 0
 
-        # ---- Basic RMR ----
+        # Basic RMR 
         basic_rmr = r1 + r2 + r3 + r4 + r5
 
-        # ---- Table B: Orientation adjustment ----
+        # Table B: Orientation adjustment
         structure_type = request.form.get('structure_type', '')
         orientation_code = request.form.get('orientation', '')
         orientation_text = ORIENTATION_MAP.get(orientation_code, '')
