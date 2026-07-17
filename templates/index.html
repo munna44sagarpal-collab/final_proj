@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RMR</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 40px;
+  }
+
+  form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-align: center;
+    color: #222;
+    margin-bottom: 30px;
+  }
+
+  .section {
+    background: #fff;
+    margin-bottom: 20px;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .section h3 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .section input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    margin: 6px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .option:hover {
+    background: #f0f4ff;
+    border-color: #7a9cff;
+  }
+
+  .option input {
+    margin-right: 10px;
+  }
+
+  .option label {
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .subfield {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #ccc;
+  }
+
+  .subfield label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #444;
+  }
+
+  .subfield input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  .subfield .option {
+    margin: 6px 0;
+  }
+
+  button {
+    display: block;
+    margin: 25px auto 0 auto;
+    padding: 12px 30px;
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #3955c4;
+  }
+</style>
+</head>
+<body>
+
+<h1>Input Parameters and their Values</h1>
+
+{% if result is not none %}
+  <div class="section" style="border: 2px solid #4a6cf7;">
+    <h3>Result</h3>
+    <p><strong>Rating 1 (Strength):</strong> {{ result.r1 }}</p>
+    <p><strong>Rating 2 (RQD):</strong> {{ result.r2 }}</p>
+    <p><strong>Rating 3 (Spacing):</strong> {{ result.r3 }}</p>
+    <p><strong>Rating 4 (Condition of Discontinuities):</strong> {{ result.r4 }}</p>
+    <p><strong>Rating 5 (Groundwater):</strong> {{ result.r5 }}</p>
+    <p><strong>Basic RMR:</strong> {{ result.basic_rmr }}</p>
+    <p><strong>Orientation Adjustment:</strong> {{ result.adjustment }}</p>
+    <h3 style="color:#4a6cf7;">Final RMR = {{ result.final_rmr }}</h3>
+  </div>
+{% endif %}
+
+<form id="rmrForm" method="POST" action="/">
+
+  <!-- 1. type_test -->
+  <div class="section">
+    <h3>1. Type of Strength Test</h3>
+    <div class="option">
+      <input type="radio" id="test_ucs" name="type_test" value="ucs" required onchange="showTestField('ucs')">
+      <label for="test_ucs">UCS (Uniaxial Compressive Strength)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="test_point_load" name="type_test" value="point_load" onchange="showTestField('point_load')">
+      <label for="test_point_load">Point Load Strength Index</label>
+    </div>
+
+    <!-- Sub-field: shown only when "ucs" is selected -->
+    <div class="subfield" id="field_ucs" style="display:none;">
+      <label>Enter UCS value (MPa):</label>
+      <input type="number" step="any" name="ucs_value" placeholder="e.g. 120">
+    </div>
+
+    <!-- Sub-field: shown only when "point_load" is selected -->
+    <div class="subfield" id="field_point_load" style="display:none;">
+      <label>Enter Point Load Index value (MPa):</label>
+      <input type="number" step="any" name="point_load_value" placeholder="e.g. 6.5">
+    </div>
+  </div>
+
+  <!-- 2. rqd -->
+  <div class="section">
+    <h3>2. RQD (%)</h3>
+    <input type="number" step="any" name="rqd" placeholder="e.g. 82" required>
+  </div>
+
+  <!-- 3. spacing of discontinuity -->
+  <div class="section">
+    <h3>3. Spacing of Discontinuity (mm)</h3>
+    <input type="number" step="any" name="spacing" placeholder="e.g. 450" required>
+  </div>
+
+  <!-- 4. separation -->
+  <div class="section">
+    <h3>4. Separation (mm)</h3>
+    <input type="number" step="any" name="separation" placeholder="e.g. 0.5" required>
+  </div>
+
+  <!-- 5. length -->
+  <div class="section">
+    <h3>5. Length / Persistence (m)</h3>
+    <input type="number" step="any" name="length" placeholder="e.g. 4.2" required>
+  </div>
+
+  <!-- 6. roughness -->
+  <div class="section">
+    <h3>6. Roughness</h3>
+    <div class="option">
+      <input type="radio" id="rough_vr" name="roughness" value="vr" required>
+      <label for="rough_vr">Very Rough (vr)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="rough_r" name="roughness" value="r">
+      <label for="rough_r">Rough (r)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="rough_sr" name="roughness" value="sr">
+      <label for="rough_sr">Slightly Rough (sr)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="rough_s" name="roughness" value="s">
+      <label for="rough_s">Smooth (s)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="rough_ss" name="roughness" value="ss">
+      <label for="rough_ss">Slickensided (ss)</label>
+    </div>
+  </div>
+
+  <!-- 7. Infilling_type -->
+  <div class="section">
+    <h3>7. Infilling Type</h3>
+    <div class="option">
+      <input type="radio" id="infill_none" name="infilling_type" value="none" required onchange="showInfillField('none')">
+      <label for="infill_none">None</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="infill_soft" name="infilling_type" value="soft_filling" onchange="showInfillField('soft')">
+      <label for="infill_soft">Soft Filling</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="infill_hard" name="infilling_type" value="hard_filling" onchange="showInfillField('hard')">
+      <label for="infill_hard">Hard Filling</label>
+    </div>
+
+    <!-- Sub-field: shown only when "soft_filling" is selected -->
+    <div class="subfield" id="field_soft" style="display:none;">
+      <label>Enter soft filling thickness (mm):</label>
+      <input type="number" step="any" name="soft_thickness" placeholder="e.g. 3">
+    </div>
+
+    <!-- Sub-field: shown only when "hard_filling" is selected -->
+    <div class="subfield" id="field_hard" style="display:none;">
+      <label>Enter hard filling thickness (mm):</label>
+      <input type="number" step="any" name="hard_thickness" placeholder="e.g. 7">
+    </div>
+
+    <!-- No sub-field for "none" -->
+  </div>
+
+  <!-- 8. weathering -->
+  <div class="section">
+    <h3>8. Weathering</h3>
+    <div class="option">
+      <input type="radio" id="weather_w" name="weathering" value="w" required>
+      <label for="weather_w">Unweathered (w)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="weather_sw" name="weathering" value="sw">
+      <label for="weather_sw">Slightly Weathered (sw)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="weather_mw" name="weathering" value="mw">
+      <label for="weather_mw">Moderately Weathered (mw)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="weather_hw" name="weathering" value="hw">
+      <label for="weather_hw">Highly Weathered (hw)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="weather_d" name="weathering" value="d">
+      <label for="weather_d">Decomposed (d)</label>
+    </div>
+  </div>
+
+  <!-- 9. gw_choice -->
+  <div class="section">
+    <h3>9. Groundwater Input Type</h3>
+    <div class="option">
+      <input type="radio" id="gw_inflow" name="gw_choice" value="inflow" required onchange="showGwField('inflow')">
+      <label for="gw_inflow">Inflow (litres/min)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="gw_ratio" name="gw_choice" value="pw/sigma1" onchange="showGwField('ratio')">
+      <label for="gw_ratio">pw / sigma1</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="gw_general" name="gw_choice" value="general_conditions" onchange="showGwField('general')">
+      <label for="gw_general">General Conditions</label>
+    </div>
+
+    <!-- Sub-field: shown only when "inflow" is selected -->
+    <div class="subfield" id="field_inflow" style="display:none;">
+      <label>Enter inflow value (litres/min):</label>
+      <input type="number" step="any" name="inflow_value" placeholder="e.g. 15">
+    </div>
+
+    <!-- Sub-field: shown only when "pw/sigma1" is selected -->
+    <div class="subfield" id="field_ratio" style="display:none;">
+      <label>Enter pw / sigma1 value:</label>
+      <input type="number" step="any" name="ratio_value" placeholder="e.g. 0.15">
+    </div>
+
+    <!-- Sub-field: shown only when "general_conditions" is selected -->
+    <div class="subfield" id="field_general" style="display:none;">
+      <label>Select general condition:</label>
+      <div class="option">
+        <input type="radio" id="gc_dry" name="general_condition_value" value="completely_dry">
+        <label for="gc_dry">Completely Dry</label>
+      </div>
+      <div class="option">
+        <input type="radio" id="gc_damp" name="general_condition_value" value="damp">
+        <label for="gc_damp">Damp</label>
+      </div>
+      <div class="option">
+        <input type="radio" id="gc_wet" name="general_condition_value" value="wet">
+        <label for="gc_wet">Wet</label>
+      </div>
+      <div class="option">
+        <input type="radio" id="gc_dripping" name="general_condition_value" value="dripping">
+        <label for="gc_dripping">Dripping</label>
+      </div>
+      <div class="option">
+        <input type="radio" id="gc_flowing" name="general_condition_value" value="flowing">
+        <label for="gc_flowing">Flowing</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. structure_type -->
+  <div class="section">
+    <h3>10. Structure Type</h3>
+    <div class="option">
+      <input type="radio" id="struct_tunnels" name="structure_type" value="tunnels" required>
+      <label for="struct_tunnels">Tunnels</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="struct_foundations" name="structure_type" value="foundations">
+      <label for="struct_foundations">Foundations</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="struct_slopes" name="structure_type" value="slopes">
+      <label for="struct_slopes">Slopes</label>
+    </div>
+  </div>
+
+  <!-- 11. orientation -->
+  <div class="section">
+    <h3>11. Orientation</h3>
+    <div class="option">
+      <input type="radio" id="orient_vf" name="orientation" value="vf" required>
+      <label for="orient_vf">Very Favourable (vf)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="orient_fav" name="orientation" value="fav">
+      <label for="orient_fav">Favourable (fav)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="orient_fair" name="orientation" value="fair">
+      <label for="orient_fair">Fair (fair)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="orient_uf" name="orientation" value="uf">
+      <label for="orient_uf">Unfavourable (uf)</label>
+    </div>
+    <div class="option">
+      <input type="radio" id="orient_vuf" name="orientation" value="vuf">
+      <label for="orient_vuf">Very Unfavourable (vuf)</label>
+    </div>
+  </div>
+
+  <button type="submit">Calculate RMR</button>
+
+</form>
+
+<script>
+  function showTestField(selected) {
+    document.getElementById('field_ucs').style.display = 'none';
+    document.getElementById('field_point_load').style.display = 'none';
+
+    if (selected === 'ucs') {
+      document.getElementById('field_ucs').style.display = 'block';
+    } else if (selected === 'point_load') {
+      document.getElementById('field_point_load').style.display = 'block';
+    }
+  }
+
+  function showInfillField(selected) {
+    document.getElementById('field_soft').style.display = 'none';
+    document.getElementById('field_hard').style.display = 'none';
+
+    if (selected === 'soft') {
+      document.getElementById('field_soft').style.display = 'block';
+    } else if (selected === 'hard') {
+      document.getElementById('field_hard').style.display = 'block';
+    }
+    // "none" selected -> both stay hidden
+  }
+
+  function showGwField(selected) {
+    document.getElementById('field_inflow').style.display = 'none';
+    document.getElementById('field_ratio').style.display = 'none';
+    document.getElementById('field_general').style.display = 'none';
+
+    if (selected === 'inflow') {
+      document.getElementById('field_inflow').style.display = 'block';
+    } else if (selected === 'ratio') {
+      document.getElementById('field_ratio').style.display = 'block';
+    } else if (selected === 'general') {
+      document.getElementById('field_general').style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
