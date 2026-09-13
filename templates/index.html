@@ -2,138 +2,293 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RMR</title>
+<title>RMR Classification Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    padding: 40px;
+
+  :root {
+    --ink: #26323b;
+    --ink-soft: #5a6b73;
+    --bg: #eeebe3;
+    --surface: #fffdf9;
+    --line: #ddd6c7;
+    --accent: #9c5a34;
+    --accent-soft: #f1e2d3;
+    --result-deep: #33473f;
+    --result-soft: #e7ede9;
+    --focus: #6b8a94;
   }
 
-  form {
-    max-width: 600px;
-    margin: 0 auto;
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 34px 34px;
+    background-position: -1px -1px;
+    color: var(--ink);
+    padding: 48px 20px 80px;
+    margin: 0;
   }
+
+  form { max-width: 640px; margin: 0 auto; }
 
   h1 {
-    text-align: center;
-    color: #222;
-    margin-bottom: 30px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 30px;
+    letter-spacing: 0.2px;
+    color: var(--ink);
+    text-align: left;
+    margin: 0 auto 6px;
+    max-width: 640px;
+  }
+
+  .subtitle {
+    max-width: 640px;
+    margin: 0 auto 34px;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 22px;
   }
 
   .section {
-    background: #fff;
-    margin-bottom: 20px;
-    padding: 20px 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: relative;
+    background: var(--surface);
+    margin-bottom: 18px;
+    padding: 22px 24px 22px 60px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+
+  .section::before {
+    content: attr(data-index);
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 22px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-right: 1px solid var(--line);
   }
 
   .section h3 {
-    margin-top: 0;
-    color: #333;
+    margin: 0 0 14px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 16.5px;
+    color: var(--ink);
   }
 
   .section input[type="number"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-family: 'Inter', Arial, sans-serif;
     font-size: 15px;
+    color: var(--ink);
+    background: var(--surface);
     box-sizing: border-box;
+  }
+
+  .section input[type="number"]:focus,
+  .section input[type="number"]:focus-visible {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px rgba(107, 138, 148, 0.18);
   }
 
   .option {
     display: flex;
     align-items: center;
-    padding: 8px 10px;
-    margin: 6px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 7px 0;
+    border: 1px solid var(--line);
+    border-radius: 5px;
     cursor: pointer;
-    transition: 0.2s;
+    background: var(--surface);
+    transition: border-color 0.15s ease, background 0.15s ease;
   }
 
   .option:hover {
-    background: #f0f4ff;
-    border-color: #7a9cff;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .option:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .option:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
   }
 
   .option input {
-    margin-right: 10px;
+    margin-right: 12px;
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
   }
 
   .option label {
     cursor: pointer;
     flex: 1;
+    font-size: 15px;
+    color: var(--ink);
   }
 
   .subfield {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px dashed #ccc;
+    margin-top: 16px;
+    padding: 16px 16px 4px;
+    border-top: 1px dashed var(--line);
   }
 
-  .subfield label {
+  .subfield > label {
     display: block;
-    margin-bottom: 6px;
-    font-weight: bold;
-    color: #444;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--ink-soft);
   }
 
   .subfield input[type="number"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
     font-size: 15px;
     box-sizing: border-box;
   }
 
-  .subfield .option {
-    margin: 6px 0;
-  }
+  .subfield .option { margin: 6px 0; }
 
   button {
     display: block;
-    margin: 25px auto 0 auto;
-    padding: 12px 30px;
-    background: #4a6cf7;
-    color: white;
+    width: 100%;
+    max-width: 640px;
+    margin: 30px auto 0;
+    padding: 15px 30px;
+    background: var(--ink);
+    color: #fdfaf5;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 4px;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
     cursor: pointer;
+    transition: background 0.15s ease;
   }
 
-  button:hover {
-    background: #3955c4;
+  button:hover { background: var(--accent); }
+
+  button:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* Result panel */
+  .result-panel {
+    max-width: 640px;
+    margin: 0 auto 34px;
+    background: var(--result-soft);
+    border: 1px solid #c4d3cb;
+    border-left: 5px solid var(--result-deep);
+    border-radius: 3px;
+    padding: 24px 28px;
+  }
+
+  .result-panel h3 {
+    margin: 0 0 16px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--result-deep);
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+    margin-bottom: 14px;
+  }
+
+  .result-grid p {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--ink);
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted #c4d3cb;
+    padding-bottom: 6px;
+  }
+
+  .result-grid p strong {
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .result-final {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #c4d3cb;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--result-deep);
+  }
+
+  @media (max-width: 480px) {
+    .section { padding: 18px 18px 18px 52px; }
+    .section::before { width: 36px; font-size: 13px; }
+    .result-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<h1>Input Parameters and their Values</h1>
+<h1>Rock Mass Rating (RMR) Calculator</h1>
+<p class="subtitle">Enter site investigation parameters below to compute the Bieniawski RMR classification for a rock mass.</p>
 
 {% if result is not none %}
-  <div class="section" style="border: 2px solid #4a6cf7;">
-    <h3>Result</h3>
-    <p><strong>Rating 1 (Strength):</strong> {{ result.r1 }}</p>
-    <p><strong>Rating 2 (RQD):</strong> {{ result.r2 }}</p>
-    <p><strong>Rating 3 (Spacing):</strong> {{ result.r3 }}</p>
-    <p><strong>Rating 4 (Condition of Discontinuities):</strong> {{ result.r4 }}</p>
-    <p><strong>Rating 5 (Groundwater):</strong> {{ result.r5 }}</p>
-    <p><strong>Basic RMR:</strong> {{ result.basic_rmr }}</p>
-    <p><strong>Orientation Adjustment:</strong> {{ result.adjustment }}</p>
-    <h3 style="color:#4a6cf7;">Final RMR = {{ result.final_rmr }}</h3>
+  <div class="result-panel">
+    <h3>Computed Classification</h3>
+    <div class="result-grid">
+      <p><strong>Rating 1 &middot; Strength</strong> {{ result.r1 }}</p>
+      <p><strong>Rating 2 &middot; RQD</strong> {{ result.r2 }}</p>
+      <p><strong>Rating 3 &middot; Spacing</strong> {{ result.r3 }}</p>
+      <p><strong>Rating 4 &middot; Discontinuities</strong> {{ result.r4 }}</p>
+      <p><strong>Rating 5 &middot; Groundwater</strong> {{ result.r5 }}</p>
+      <p><strong>Basic RMR</strong> {{ result.basic_rmr }}</p>
+      <p><strong>Orientation Adjustment</strong> {{ result.adjustment }}</p>
+    </div>
+    <div class="result-final">Final RMR &nbsp;=&nbsp; {{ result.final_rmr }}</div>
   </div>
 {% endif %}
 
 <form id="rmrForm" method="POST" action="/">
 
   <!-- 1. type_test -->
-  <div class="section">
-    <h3>1. Type of Strength Test</h3>
+  <div class="section" data-index="1">
+    <h3>Type of Strength Test</h3>
     <div class="option">
       <input type="radio" id="test_ucs" name="type_test" value="ucs" required onchange="showTestField('ucs')">
       <label for="test_ucs">UCS (Uniaxial Compressive Strength)</label>
@@ -157,57 +312,57 @@
   </div>
 
   <!-- 2. rqd -->
-  <div class="section">
-    <h3>2. RQD (%)</h3>
+  <div class="section" data-index="2">
+    <h3>RQD (%)</h3>
     <input type="number" step="any" name="rqd" placeholder="e.g. 82" required>
   </div>
 
   <!-- 3. spacing of discontinuity -->
-  <div class="section">
-    <h3>3. Spacing of Discontinuity (mm)</h3>
+  <div class="section" data-index="3">
+    <h3>Spacing of Discontinuity (mm)</h3>
     <input type="number" step="any" name="spacing" placeholder="e.g. 450" required>
   </div>
 
   <!-- 4. separation -->
-  <div class="section">
-    <h3>4. Separation (mm)</h3>
+  <div class="section" data-index="4">
+    <h3>Separation (mm)</h3>
     <input type="number" step="any" name="separation" placeholder="e.g. 0.5" required>
   </div>
 
   <!-- 5. length -->
-  <div class="section">
-    <h3>5. Length / Persistence (m)</h3>
+  <div class="section" data-index="5">
+    <h3>Length / Persistence (m)</h3>
     <input type="number" step="any" name="length" placeholder="e.g. 4.2" required>
   </div>
 
   <!-- 6. roughness -->
-  <div class="section">
-    <h3>6. Roughness</h3>
+  <div class="section" data-index="6">
+    <h3>Roughness</h3>
     <div class="option">
       <input type="radio" id="rough_vr" name="roughness" value="vr" required>
-      <label for="rough_vr">Very Rough (vr)</label>
+      <label for="rough_vr">Very Rough</label>
     </div>
     <div class="option">
       <input type="radio" id="rough_r" name="roughness" value="r">
-      <label for="rough_r">Rough (r)</label>
+      <label for="rough_r">Rough</label>
     </div>
     <div class="option">
       <input type="radio" id="rough_sr" name="roughness" value="sr">
-      <label for="rough_sr">Slightly Rough (sr)</label>
+      <label for="rough_sr">Slightly Rough</label>
     </div>
     <div class="option">
       <input type="radio" id="rough_s" name="roughness" value="s">
-      <label for="rough_s">Smooth (s)</label>
+      <label for="rough_s">Smooth</label>
     </div>
     <div class="option">
       <input type="radio" id="rough_ss" name="roughness" value="ss">
-      <label for="rough_ss">Slickensided (ss)</label>
+      <label for="rough_ss">Slickensided</label>
     </div>
   </div>
 
   <!-- 7. Infilling_type -->
-  <div class="section">
-    <h3>7. Infilling Type</h3>
+  <div class="section" data-index="7">
+    <h3>Infilling Type</h3>
     <div class="option">
       <input type="radio" id="infill_none" name="infilling_type" value="none" required onchange="showInfillField('none')">
       <label for="infill_none">None</label>
@@ -237,33 +392,33 @@
   </div>
 
   <!-- 8. weathering -->
-  <div class="section">
-    <h3>8. Weathering</h3>
+  <div class="section" data-index="8">
+    <h3>Weathering</h3>
     <div class="option">
       <input type="radio" id="weather_w" name="weathering" value="w" required>
-      <label for="weather_w">Unweathered (w)</label>
+      <label for="weather_w">Unweathered</label>
     </div>
     <div class="option">
       <input type="radio" id="weather_sw" name="weathering" value="sw">
-      <label for="weather_sw">Slightly Weathered (sw)</label>
+      <label for="weather_sw">Slightly Weathered</label>
     </div>
     <div class="option">
       <input type="radio" id="weather_mw" name="weathering" value="mw">
-      <label for="weather_mw">Moderately Weathered (mw)</label>
+      <label for="weather_mw">Moderately Weathered</label>
     </div>
     <div class="option">
       <input type="radio" id="weather_hw" name="weathering" value="hw">
-      <label for="weather_hw">Highly Weathered (hw)</label>
+      <label for="weather_hw">Highly Weathered</label>
     </div>
     <div class="option">
       <input type="radio" id="weather_d" name="weathering" value="d">
-      <label for="weather_d">Decomposed (d)</label>
+      <label for="weather_d">Decomposed</label>
     </div>
   </div>
 
   <!-- 9. gw_choice -->
-  <div class="section">
-    <h3>9. Groundwater Input Type</h3>
+  <div class="section" data-index="9">
+    <h3>Groundwater Input Type</h3>
     <div class="option">
       <input type="radio" id="gw_inflow" name="gw_choice" value="inflow" required onchange="showGwField('inflow')">
       <label for="gw_inflow">Inflow (litres/min)</label>
@@ -316,8 +471,8 @@
   </div>
 
   <!-- 10. structure_type -->
-  <div class="section">
-    <h3>10. Structure Type</h3>
+  <div class="section" data-index="10">
+    <h3>Structure Type</h3>
     <div class="option">
       <input type="radio" id="struct_tunnels" name="structure_type" value="tunnels" required>
       <label for="struct_tunnels">Tunnels</label>
@@ -333,27 +488,27 @@
   </div>
 
   <!-- 11. orientation -->
-  <div class="section">
-    <h3>11. Orientation</h3>
+  <div class="section" data-index="11">
+    <h3>Orientation</h3>
     <div class="option">
       <input type="radio" id="orient_vf" name="orientation" value="vf" required>
-      <label for="orient_vf">Very Favourable (vf)</label>
+      <label for="orient_vf">Very Favourable</label>
     </div>
     <div class="option">
       <input type="radio" id="orient_fav" name="orientation" value="fav">
-      <label for="orient_fav">Favourable (fav)</label>
+      <label for="orient_fav">Favourable</label>
     </div>
     <div class="option">
       <input type="radio" id="orient_fair" name="orientation" value="fair">
-      <label for="orient_fair">Fair (fair)</label>
+      <label for="orient_fair">Fair</label>
     </div>
     <div class="option">
       <input type="radio" id="orient_uf" name="orientation" value="uf">
-      <label for="orient_uf">Unfavourable (uf)</label>
+      <label for="orient_uf">Unfavourable</label>
     </div>
     <div class="option">
       <input type="radio" id="orient_vuf" name="orientation" value="vuf">
-      <label for="orient_vuf">Very Unfavourable (vuf)</label>
+      <label for="orient_vuf">Very Unfavourable</label>
     </div>
   </div>
 
