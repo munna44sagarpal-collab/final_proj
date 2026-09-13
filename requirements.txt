@@ -1,5 +1,4 @@
-# Streamlit Calculator - Minimal Battle-Tested Requirements
-# Using ONLY stable versions with maximum pre-built wheel availability
-# Tested to work without needing to compile anything
+# Streamlit RMR Calculator - Complete Requirements
+# Only packages that are actually imported and used in the app
 streamlit==1.25.0
 pandas==1.5.3
