@@ -1,0 +1,25 @@
+# Docker ignore patterns for faster builds
+.git
+.gitignore
+.github
+.vscode
+.streamlit
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv
+.env
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.idea
+.DS_Store
+*.log
+node_modules
