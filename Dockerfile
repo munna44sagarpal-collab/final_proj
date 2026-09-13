@@ -7,27 +7,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# CRITICAL: Install setuptools, pip, wheel FIRST
-# This MUST run before any package installation
+# Step 1: CRITICAL - Install setuptools BEFORE anything else
 RUN pip install --no-cache-dir --upgrade \
     "pip==24.0" \
     "setuptools==68.0.0" \
     "wheel==0.41.0"
 
 # Verify setuptools is installed
-RUN python -c "import setuptools; print(f'setuptools {setuptools.__version__} installed')"
+RUN python -c "import setuptools; print(f'setuptools {setuptools.__version__} ✓')"
 
-# Clear cache
+# Step 2: Clear cache
 RUN pip cache purge
 
-# Copy requirements
+# Step 3: Copy requirements
 COPY requirements.txt .
 
-# Install dependencies - wheels ONLY
+# Step 4: Install ONLY wheels (no compilation)
 RUN pip install --no-cache-dir \
     --prefer-binary \
     --only-binary :all: \
     -r requirements.txt
+
+# Step 5: Verify packages installed
+RUN python -c "import streamlit; import pandas; print('✓ All dependencies installed successfully')"
 
 # Copy app
 COPY . .
