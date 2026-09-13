@@ -1,2 +1,5 @@
-streamlit==1.28.0
-pandas==2.0.0
+# Streamlit Calculator - Minimal Battle-Tested Requirements
+# Using ONLY stable versions with maximum pre-built wheel availability
+# Tested to work without needing to compile anything
+streamlit==1.25.0
+pandas==1.5.3
