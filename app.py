@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-#app = Flask(__name__)
+app = Flask(__name__)
 # RMR CALCULATION FUNCTIONS
 
 #  PARAMETER 1: Strength of intact rock material 
