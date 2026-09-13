@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "calculator-app"
+version = "0.1.0"
+description = "A calculator web application built with Streamlit"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "munna44sagarpal-collab"}]
+requires-python = ">=3.8"
+dependencies = [
+    "streamlit>=1.39.0",
+    "pandas>=2.2.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=23.0",
+]
+
+[tool.setuptools]
+packages = ["calculator"]
+exclude = ["tests*", "docs*", "*.pyc", ".git*", ".streamlit*"]
+
+[tool.setuptools.package-data]
+calculator = ["templates/**/*.html"]
